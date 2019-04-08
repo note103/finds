@@ -16,10 +16,7 @@ my @omit = ();
 
 for my $arg (@args) {
     chomp $arg;
-    if ($arg eq '-a') {
-        $all = '-a';
-    }
-    elsif ($arg =~ /\A-d=(\d+)\z/) {
+    if ($arg =~ /\A-d=(\d+)\z/) {
         $depth = $1;
     }
     elsif ($arg eq '-d') {
@@ -59,7 +56,7 @@ if (scalar @omit != 0) {
     }
 }
 
-my $search_segment = "ag $opt $query --depth $depth $all $hidden $omit $file";
+my $search_segment = "ag $opt $query --depth $depth -u -i $hidden $omit $file";
 
 if ($dump == 1) {
     warn `$search_segment`;
