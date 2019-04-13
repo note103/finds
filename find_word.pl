@@ -5,12 +5,8 @@ use feature 'say';
 
 my @args = @ARGV;
 
-my $all = '';
 my $depth = 10;
-my $dump = 0;
-my $file = '';
-my $hidden = '';
-my $opt = '-S';
+my $all = '';
 my $query = '';
 my @omit = ();
 
@@ -19,20 +15,11 @@ for my $arg (@args) {
     if ($arg =~ /\A-d=(\d+)\z/) {
         $depth = $1;
     }
-    elsif ($arg eq '-d') {
-        $dump = 1;
+    elsif ($arg =~ /\A-v=(.+)\z/) {
+        push @omit, "$1";
     }
-    elsif ($arg =~ /\A-f=(.+)\z/) {
-        $file = "-G $1";
-    }
-    elsif ($arg eq '-h') {
-        $hidden = '--hidden';
-    }
-    elsif ($arg eq '--count') {
-        $opt = '-cS';
-    }
-    elsif ($arg =~ /\A-i=(.+)\z/) {
-        push @omit, "*$1*";
+    elsif ($arg eq '-u') {
+        $all = '-u';
     }
     elsif ($arg =~ /\A-c=(.+)\z/) {
         next;
@@ -56,13 +43,8 @@ if (scalar @omit != 0) {
     }
 }
 
-my $search_segment = "ag $opt $query --depth $depth -u -i $hidden $omit $file";
+my $search_segment = "ag --depth $depth $all $omit $query";
 
-if ($dump == 1) {
-    warn `$search_segment`;
-}
-else {
-    my $result = `$search_segment | peco`;
-    $result =~ s/\A(.+?):\d+.*/$1/;
-    print `echo $result`;
-}
+my $result = `$search_segment | peco`;
+$result =~ s/\A(.+?):\d+.*/$1/;
+print `echo $result`;
