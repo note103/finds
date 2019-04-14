@@ -30,26 +30,26 @@ my @invert_file = @{$opts->{'invert-file'}} if $opts->{'invert-file'};
 my @invert_dir = @{$opts->{'invert-dir'}} if $opts->{'invert-dir'};
 my @query = @{$opts->{query}} if $opts->{query};
 
-my $invert_file;
-if (scalar @invert_file != 0) {
+my $invert_file = '';
+if (scalar @invert_file > 0) {
     if (scalar @invert_file > 1) {
         for (@invert_file) {
             $invert_file .= ("! -iname '*$_*' ");
         }
     }
-    elsif (scalar @invert_file == 1) {
+    else {
         $invert_file = "! -iname '*$invert_file[0]*'";
     }
 }
 
 my $invert_dir;
-if (scalar @invert_dir != 0) {
+if (scalar @invert_dir > 0) {
     if (scalar @invert_dir > 1) {
         for (@invert_dir) {
             $invert_dir .= ("! -path '*/*$_*' ");
         }
     }
-    elsif (scalar @invert_dir == 1) {
+    else {
         $invert_dir = "! -path '*/*$invert_dir[0]*'";
     }
 }
