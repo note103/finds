@@ -24,13 +24,12 @@ my $query = $ARGV[0] // '';
 
 pod2usage if ($opts->{help});
 
-my $invert = '';
-if ($opts->{invert}) {
-    if (ref $invert eq "ARRAY") {
-        my @invert = @$invert;
-        $invert = join ' --ignore-dir ', @invert;
-    }
-    $invert = '--ignore-dir '.$invert;
+
+my $invert_dir = '';
+if ($opts->{'invert-dir'}) {
+    my @invert_dir = @{$opts->{'invert-dir'}};
+    $invert_dir = join ' --ignore-dir ', @invert_dir;
+    $invert_dir = '--ignore-dir '.$invert_dir;
 }
 
 my $unrestricted = '';
