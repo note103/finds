@@ -47,3 +47,14 @@ my $search_segment = "ag --depth $depth $unrestricted $invert $query";
 my $result = `$search_segment | peco`;
 $result =~ s/\A(.+?):\d+.*/$1/;
 print `echo $result`;
+
+
+__END__
+
+=head1 SYNOPSIS
+
+find-word [options] [FILE]
+
+Options:
+
+  -h --help            Show help
