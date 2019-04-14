@@ -7,14 +7,13 @@ use Pod::Usage;
 
 my $opts = {
     depth => 10,
-    invert => '',
 };
 
 GetOptions(
     $opts => qw(
         depth|d=i
         command=s
-        invert|v=s@
+        invert-dir|v=s@
         unrestricted|u
         help|h
     ),
@@ -39,7 +38,7 @@ if ($opts->{unrestricted}) {
 
 my $depth = $opts->{depth};
 
-my $search_segment = "ag --depth $depth $unrestricted $invert $query";
+my $search_segment = "ag --depth $depth $unrestricted $invert_dir $query";
 
 my $result = `$search_segment | peco`;
 $result =~ s/\A(.+?):\d+.*/$1/;
