@@ -5,8 +5,6 @@ use feature 'say';
 
 my @args = @ARGV;
 my $depth = 10;
-my $dump = 0;
-my $opt = '-S';
 my $query = '';
 my @omit = ();
 
@@ -14,9 +12,6 @@ for my $arg (@args) {
     chomp $arg;
     if ($arg =~ /\A-d=(\d+)\z/) {
         $depth = $1;
-    }
-    elsif ($arg eq '-d') {
-        $dump = 1;
     }
     elsif ($arg =~ /\A-i=(.+)\z/) {
         push @omit, "*$1*";
@@ -29,18 +24,18 @@ for my $arg (@args) {
 $query = '.' if $query eq '';
 
 my $omit = '';
-if (scalar @omit != 0) {
+if (scalar @omit > 0) {
     if (scalar @omit > 1) {
         for (@omit) {
             $omit .= "--ignore-dir $_ ";
         }
     }
-    elsif (scalar @omit == 1) {
+    else {
         $omit = "--ignore-dir $omit[0]";
     }
 }
 
-my $search_segment = "ag $opt $query --depth $depth $omit";
+my $search_segment = "ag -S $query --depth $depth $omit";
 
 my $result = `$search_segment`;
 my @result = split /\n/, $result;
