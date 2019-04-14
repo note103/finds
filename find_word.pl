@@ -3,15 +3,31 @@ use strict;
 use warnings;
 use feature 'say';
 use Smart::Options;
+use Getopt::Long qw(:config posix_default no_ignore_case gnu_compat);
+use Pod::Usage;
 
-my $opts = Smart::Options->new
-    ->default(invert => '')->alias(v => 'invert')
-    ->default(unrestricted => '')->alias(u => 'unrestricted')
-    ->default(depth => 10)->alias(d => 'depth')
-    ->parse;
 
-my $invert = $opts->{invert};
-if ($invert ne '') {
+my $opts = {
+    depth => 10,
+    invert => '',
+};
+
+GetOptions(
+    $opts => qw(
+        depth|d=i
+        command=s
+        invert|v=s@
+        unrestricted|u
+        help|h
+    ),
+);
+
+my $query = $ARGV[0] // '';
+
+pod2usage if ($opts->{help});
+
+my $invert = '';
+if ($opts->{invert}) {
     if (ref $invert eq "ARRAY") {
         my @invert = @$invert;
         $invert = join ' --ignore-dir ', @invert;
@@ -25,7 +41,6 @@ if ($opts->{unrestricted}) {
 }
 
 my $depth = $opts->{depth};
-my $query = $opts->{_}->[0];
 
 my $search_segment = "ag --depth $depth $unrestricted $invert $query";
 
