@@ -28,7 +28,6 @@ my $depth = $opts->{depth};
 
 my @invert_file = @{$opts->{'invert-file'}} if $opts->{'invert-file'};
 my @invert_dir = @{$opts->{'invert-dir'}} if $opts->{'invert-dir'};
-my @query = @{$opts->{query}} if $opts->{query};
 
 my $invert_file = '';
 if (scalar @invert_file > 0) {
