@@ -1,126 +1,100 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+use Getopt::Long qw(:config posix_default no_ignore_case gnu_compat);
+use Pod::Usage;
 
-my @args = @ARGV;
 
-my $depth = 10;
-my $result = '';
-my $omitf = '';
-my $omitd = '';
+my $opts = {
+    depth => 10,
+    dump => 0,
+};
+
+GetOptions(
+    $opts => qw(
+        dump
+        depth=i
+        command=s
+        invert-file=s@
+        invert-dir=s@
+        query|q=s@
+        help|h
+    ),
+);
+
+pod2usage if ($opts->{help});
+
+
+my $depth = $opts->{depth};
+my $dump = $opts->{dump};
+
+my @invert_file = @{$opts->{'invert-file'}} if $opts->{'invert-file'};
+my @invert_dir = @{$opts->{'invert-dir'}} if $opts->{'invert-dir'};
+my @query = @{$opts->{query}} if $opts->{query};
+
+my $invert_file;
+if (scalar @invert_file != 0) {
+    if (scalar @invert_file > 1) {
+        for (@invert_file) {
+            $invert_file .= ("! -iname '*$_*' ");
+        }
+    }
+    elsif (scalar @invert_file == 1) {
+        $invert_file = "! -iname '*$invert_file[0]*'";
+    }
+}
+
+my $invert_dir;
+if (scalar @invert_dir != 0) {
+    if (scalar @invert_dir > 1) {
+        for (@invert_dir) {
+            $invert_dir .= ("! -path '*/*$_*' ");
+        }
+    }
+    elsif (scalar @invert_dir == 1) {
+        $invert_dir = "! -path '*/*$invert_dir[0]*'";
+    }
+}
+
 my $query = '';
-my $dump = 0;
-
-my @omitf = ();
-my @omitd = ('.*');
-my @path = ();
-
-# オプション取得
-for my $arg (@args) {
-    chomp $arg;
-    if ($arg =~ /\A-d=(\d+)\z/) {
-        $depth = $1;
-    }
-    elsif ($arg =~ /\A-vf=(.+)\z/) {
-        push @omitf, $1;
-    }
-    elsif ($arg =~ /\A-vd=(.+)\z/) {
-        push @omitd, $1;
-    }
-    elsif ($arg =~ /\A-i=(.+)\z/) {
-        push @path, $1;
-    }
-    elsif ($arg eq '-a') {
-        shift @omitd;
-    }
-    elsif ($arg =~ /\A(\w+)\z/) {
-        $query = "--query $1";
-    }
-    elsif ($arg eq '-d') {
-        $dump = 1;
-    }
-}
-
-if (scalar @omitd != 0) {
-    if (scalar @omitd > 1) {
-        for (@omitd) {
-            $omitd .= ("-path './$_' -o ");
+if (scalar @query != 0) {
+    if (scalar @query > 1) {
+        for (@query) {
+            $query .= ("--query $_ ");
         }
     }
-    elsif (scalar @omitd == 1) {
-        $omitd = "-path './$omitd[0]'";
+    elsif (scalar @query == 1) {
+        $query = "--query $query[0]";
     }
-    $omitd =~ s/-o \z//;
 }
 
-if (scalar @omitf != 0) {
-    if (scalar @omitf > 1) {
-        for (@omitf) {
-            $omitf .= ("! -iname '*$_*' ");
-        }
-    }
-    elsif (scalar @omitf == 1) {
-        $omitf = "! -iname '*$omitf[0]*'";
-    }
-    $omitf =~ s/ \z//;
-}
-
-my $path;
-if (scalar @path != 0) {
-    if (scalar @path > 1) {
-        for (@path) {
-            $path .= ("! -path '*/*$_*/*' ");
-        }
-    }
-    elsif (scalar @path == 1) {
-        $path = "! -path '*/*$path[0]*/*'";
-    }
-    $path =~ s/ \z//;
-}
-
-my $find_omit_segment = "find . -maxdepth $depth $omitd -prune -o -iname '*'";
-my $find_no_omit_segment = "find . -maxdepth $depth -iname '*'";
 my $print_peco = "-print | peco $query";
 $print_peco = '-print 2>/dev/null' if $dump == 1;
 
-if ($path) {
-    if ($omitf) {
-        $result = `find . -maxdepth $depth $path $omitf -iname '*' $print_peco`;
+if ($invert_dir) {
+    if ($invert_file) {
+        print `find . -maxdepth $depth $invert_dir $invert_file -iname '*' $print_peco`;
     }
     else {
-        $result = `find . -maxdepth $depth $path -iname '*' $print_peco`;
-    }
-}
-elsif ($omitd) {
-    if ($omitf) {
-        $result = `$find_omit_segment $omitf $print_peco`;
-    }
-    else {
-        $result = `$find_omit_segment $print_peco`;
+        print `find . -maxdepth $depth $invert_dir -iname '*' $print_peco`;
     }
 }
 else {
-    if ($omitf) {
-        $result = `$find_no_omit_segment $omitf $print_peco`;
+    if ($invert_file) {
+        print `find . -maxdepth $depth -iname '*' $invert_file $print_peco`;
     }
     else {
-        $result = `$find_no_omit_segment $print_peco`;
+        print `find . -maxdepth $depth -iname '*' $print_peco`;
     }
 }
 
-if ($result =~ /\n/) {
-    if ($dump == 1) {
-        $result =~ s/[ \t]+/_/g;
-        my @result;
-        @result = split /\n/, $result;
-        print `echo @result`;
-    }
-    else {
-        $result =~ s/\A(.+?):\d+.*/$1/;
-        print `echo "$result"`;
-    }
-}
-else {
-    $result =~ s/\A(.+?):\d+.*/$1/;
-    print `echo $result`;
-}
+
+__END__
+
+=head1 SYNOPSIS
+
+find-file [options] [FILE]
+
+Options:
+
+  -h --help            Show help
