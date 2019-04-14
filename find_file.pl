@@ -42,7 +42,7 @@ if (scalar @invert_file > 0) {
     }
 }
 
-my $invert_dir;
+my $invert_dir = '';
 if (scalar @invert_dir > 0) {
     if (scalar @invert_dir > 1) {
         for (@invert_dir) {
@@ -58,22 +58,7 @@ $query = '--query '.$query if $query;
 
 my $print_peco = "-print | peco $query";
 
-if ($invert_dir) {
-    if ($invert_file) {
-        print `find . -maxdepth $depth $invert_dir $invert_file -iname '*' $print_peco`;
-    }
-    else {
-        print `find . -maxdepth $depth $invert_dir -iname '*' $print_peco`;
-    }
-}
-else {
-    if ($invert_file) {
-        print `find . -maxdepth $depth -iname '*' $invert_file $print_peco`;
-    }
-    else {
-        print `find . -maxdepth $depth -iname '*' $print_peco`;
-    }
-}
+print `find . -maxdepth $depth $invert_dir $invert_file -iname '*' $print_peco`;
 
 
 __END__
