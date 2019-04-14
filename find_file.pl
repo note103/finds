@@ -15,10 +15,11 @@ GetOptions(
         command=s
         invert-file=s@
         invert-dir=s@
-        query|q=s@
         help|h
     ),
 );
+
+my $query = $ARGV[0] // '';
 
 pod2usage if ($opts->{help});
 
@@ -53,17 +54,7 @@ if (scalar @invert_dir != 0) {
     }
 }
 
-my $query = '';
-if (scalar @query != 0) {
-    if (scalar @query > 1) {
-        for (@query) {
-            $query .= ("--query $_ ");
-        }
-    }
-    elsif (scalar @query == 1) {
-        $query = "--query $query[0]";
-    }
-}
+$query = '--query '.$query if $query;
 
 my $print_peco = "-print | peco $query";
 
