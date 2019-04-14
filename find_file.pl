@@ -7,12 +7,10 @@ use Pod::Usage;
 
 my $opts = {
     depth => 10,
-    dump => 0,
 };
 
 GetOptions(
     $opts => qw(
-        dump
         depth=i
         command=s
         invert-file=s@
@@ -26,7 +24,6 @@ pod2usage if ($opts->{help});
 
 
 my $depth = $opts->{depth};
-my $dump = $opts->{dump};
 
 my @invert_file = @{$opts->{'invert-file'}} if $opts->{'invert-file'};
 my @invert_dir = @{$opts->{'invert-dir'}} if $opts->{'invert-dir'};
@@ -69,7 +66,6 @@ if (scalar @query != 0) {
 }
 
 my $print_peco = "-print | peco $query";
-$print_peco = '-print 2>/dev/null' if $dump == 1;
 
 if ($invert_dir) {
     if ($invert_file) {
