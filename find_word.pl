@@ -2,48 +2,32 @@
 use strict;
 use warnings;
 use feature 'say';
+use Smart::Options;
 
-my @args = @ARGV;
+my $opts = Smart::Options->new
+    ->default(invert => '')->alias(v => 'invert')
+    ->default(unrestricted => '')->alias(u => 'unrestricted')
+    ->default(depth => 10)->alias(d => 'depth')
+    ->parse;
 
-my $depth = 10;
-my $all = '';
-my $query = '';
-my @omit = ();
-
-for my $arg (@args) {
-    chomp $arg;
-    if ($arg =~ /\A-d=(\d+)\z/) {
-        $depth = $1;
+my $invert = $opts->{invert};
+if ($invert ne '') {
+    if (ref $invert eq "ARRAY") {
+        my @invert = @$invert;
+        $invert = join ' --ignore-dir ', @invert;
     }
-    elsif ($arg =~ /\A-v=(.+)\z/) {
-        push @omit, "$1";
-    }
-    elsif ($arg eq '-u') {
-        $all = '-u';
-    }
-    elsif ($arg =~ /\A-c=(.+)\z/) {
-        next;
-    }
-    else {
-        $query = $arg;
-    }
+    $invert = '--ignore-dir '.$invert;
 }
 
-$query = '.' if $query eq '';
-
-my $omit = '';
-if (scalar @omit != 0) {
-    if (scalar @omit > 1) {
-        for (@omit) {
-            $omit .= "--ignore-dir $_ ";
-        }
-    }
-    elsif (scalar @omit == 1) {
-        $omit = "--ignore-dir $omit[0]";
-    }
+my $unrestricted = '';
+if ($opts->{unrestricted}) {
+    $unrestricted = '-u';
 }
 
-my $search_segment = "ag --depth $depth $all $omit $query";
+my $depth = $opts->{depth};
+my $query = $opts->{_}->[0];
+
+my $search_segment = "ag --depth $depth $unrestricted $invert $query";
 
 my $result = `$search_segment | peco`;
 $result =~ s/\A(.+?):\d+.*/$1/;
