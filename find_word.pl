@@ -1,12 +1,14 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+
 use Getopt::Long qw(:config posix_default no_ignore_case gnu_compat);
 use Pod::Usage;
 
 
 my $opts = {
     depth => 10,
+    command => 'echo',
 };
 
 GetOptions(
@@ -43,7 +45,9 @@ my $search_segment = "ag --depth $depth $unrestricted $invert_dir $query";
 my $result = `$search_segment | peco`;
 $result =~ s/\A(.+?):\d+.*/$1/;
 
-print `echo $result`;
+my $command = $opts->{command};
+
+print `$command $result`;
 
 
 __END__

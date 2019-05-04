@@ -7,6 +7,7 @@ use Pod::Usage;
 
 my $opts = {
     depth => 10,
+    command => 'echo',
 };
 
 GetOptions(
@@ -25,6 +26,7 @@ pod2usage if ($opts->{help});
 
 
 my $depth = $opts->{depth};
+my $command = $opts->{command};
 
 my @invert_file = @{$opts->{'invert-file'}} if $opts->{'invert-file'};
 my @invert_dir = @{$opts->{'invert-dir'}} if $opts->{'invert-dir'};
@@ -57,7 +59,9 @@ $query = '--query '.$query if $query;
 
 my $print_peco = "-print | peco $query";
 
-print `find . -maxdepth $depth $invert_dir $invert_file -iname '*' $print_peco`;
+my $pickup = `find . -maxdepth $depth $invert_dir $invert_file -iname '*' $print_peco`;
+
+print `$command $pickup`;
 
 
 __END__

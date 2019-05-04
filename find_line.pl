@@ -5,27 +5,34 @@ use feature 'say';
 binmode STDOUT, ':encoding(UTF-8)';
 use open IN => ':encoding(UTF-8)';
 use Encode;
+use Getopt::Long qw(:config posix_default no_ignore_case gnu_compat);
+use Pod::Usage;
 
-my @args = @ARGV;
-my $length = 35;
-my $command = 'echo';
-my $dump = 0;
 
-for my $arg (@args) {
-    chomp $arg;
-    if ($arg eq '-o') {
-        if ($^O eq 'darwin') {
-            $command = 'open';
-        }
-        else {
-            $command = 'vim';
-        }
+my $opts = {
+    command => 'echo',
+    length => 35,
+};
+
+GetOptions(
+    $opts => qw(
+        dump|d
+        command=s
+        length|l=i
+        help|h
+    ),
+);
+
+my $dump = 0; $dump = 1 if $opts->{dump};
+my $length = $opts->{length};
+my $command = $opts->{command};
+
+if ($command eq 'open') {
+    if ($^O eq 'darwin') {
+        $command = 'open';
     }
-    elsif ($arg eq '-d') {
-        $dump = 1;
-    }
-    elsif ($arg =~ /\A(\d+)\z/) {
-        $length = $1;
+    else {
+        $command = 'vim';
     }
 }
 
