@@ -3,23 +3,18 @@ use strict;
 use warnings;
 use feature 'say';
 
-my @args = @ARGV;
-my $query = '';
+my $query = $ARGV[0];
 
-for my $arg (@args) {
-    chomp $arg;
-    if ($arg =~ /\A(\w+)\z/) {
-        $query = $1;
-    }
+unless ($query) {
+    say "Input a query.";
+    exit;
 }
 
 my $result = `find . -iname "*$query*"`;
-$result =~ s/[ \t]+/_/g;
 
 print $result;
 
-my @result;
-@result = split /\n/, $result;
+my @result = split /\n/, $result;
 
 say "\nTotal files: ".scalar @result;
 say "OK? (y/N)";
