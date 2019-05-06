@@ -57,15 +57,17 @@ if (scalar @invert_dir > 0) {
 
 $query = '--query '.$query if $query;
 
-my $print_peco = "-print | peco $query";
+my $selected = `
+    files=\$(find . -maxdepth $depth $invert_dir $invert_file -iname '*')
+    for i in exit \$files ; do echo \$i; done | peco $query | tr -d "\n"
+`;
 
-my $pickup = `find . -maxdepth $depth $invert_dir $invert_file -iname '*' $print_peco`;
+exit if $selected eq 'exit';
 
-print `$command $pickup`;
+print `$command $selected` if $selected;
 
 
 __END__
-
 =head1 SYNOPSIS
 
 find-file [options] [FILE]
