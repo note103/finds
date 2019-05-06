@@ -16,7 +16,7 @@ my $opts = {
 GetOptions(
     $opts => qw(
         depth|d=i
-        command=s
+        command|c=s
         invert-dir|v=s@
         unrestricted|u
         help|h
@@ -69,8 +69,12 @@ print `$command $selected`;
 __END__
 =head1 SYNOPSIS
 
-find-word [options] [FILE]
+$ perl find-word.pl [options]
 
 Options:
 
-  -h --help            Show help
+  -c --command          コマンド指定（デフォルトはecho）
+  -d --depth            階層指定（デフォルトは10）
+  -h --help             ヘルプ
+  -u --unrestricted     不可視ファイル等を検索対象に含める
+  -v --invert-dir       検索対象外ディレクトリを指定（複数可）
