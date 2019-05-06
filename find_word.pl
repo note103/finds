@@ -40,14 +40,20 @@ if ($opts->{unrestricted}) {
 
 my $depth = $opts->{depth};
 
-my $search_segment = "ag --depth $depth $unrestricted $invert_dir $query";
+# 検索クエリの作成
+my $search = "ag --depth $depth $unrestricted $invert_dir $query";
 
-my $result = `$search_segment | peco`;
-$result =~ s/\A(.+?):\d+.*/$1/;
+# pecoに渡す
+my $selected = `$search | peco`;
+
+exit if $selected eq '';
+
+# パス以外の要素をカット
+$selected =~ s/\A(.+?):\d+.*/$1/;
 
 my $command = $opts->{command};
 
-print `$command $result`;
+print `$command $selected`;
 
 
 __END__
