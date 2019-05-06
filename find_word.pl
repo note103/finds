@@ -6,6 +6,7 @@ use Getopt::Long qw(:config posix_default no_ignore_case gnu_compat);
 use Pod::Usage;
 
 
+# デフォルト引数を設定
 my $opts = {
     depth => 10,
     command => 'echo',
@@ -26,6 +27,7 @@ my $query = $ARGV[0] // '';
 pod2usage if ($opts->{help});
 
 
+# 検索対象外にするディレクトリを指定
 my $invert_dir = '';
 if ($opts->{'invert-dir'}) {
     my @invert_dir = @{$opts->{'invert-dir'}};
@@ -33,11 +35,13 @@ if ($opts->{'invert-dir'}) {
     $invert_dir = '--ignore-dir '.$invert_dir;
 }
 
+# Agがデフォルトで弾いている不可視ファイル等を検索対象に含める
 my $unrestricted = '';
 if ($opts->{unrestricted}) {
     $unrestricted = '-u';
 }
 
+# 対象階層の指示があれば反映
 my $depth = $opts->{depth};
 
 # 検索クエリの作成
@@ -57,7 +61,6 @@ print `$command $selected`;
 
 
 __END__
-
 =head1 SYNOPSIS
 
 find-word [options] [FILE]
