@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+use feature 'say';
 
 use Getopt::Long qw(:config posix_default no_ignore_case gnu_compat);
 use Pod::Usage;
@@ -22,10 +23,15 @@ GetOptions(
     ),
 );
 
-my $query = $ARGV[0] // '';
-
 pod2usage if ($opts->{help});
 
+my $query = $ARGV[0] // '';
+
+# 検索語句が未入力なら終了
+unless ($query) {
+    say "Input a query.";
+    exit;
+}
 
 # 検索対象外にするディレクトリを指定
 my $invert_dir = '';
