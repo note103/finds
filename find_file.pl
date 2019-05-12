@@ -57,14 +57,19 @@ if (scalar @invert_dir > 0) {
 
 $query = '--query '.$query if $query;
 
-my $selected = `
+my $path = `
     files=\$(find . -maxdepth $depth $invert_dir $invert_file -iname '*')
     for i in exit \$files ; do echo \$i; done | peco $query | tr -d "\n"
 `;
 
-exit if $selected eq 'exit';
+exit if $path eq 'exit';
 
-print `$command $selected` if $selected;
+if (-f $path) {
+    print `$command $path`;
+}
+elsif (-d $path) {
+    print `echo $path`;
+}
 
 
 __END__
