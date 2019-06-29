@@ -17,7 +17,7 @@ print $result;
 my @result = split /\n/, $result;
 
 say "\nTotal files: ".scalar @result;
-say "OK? (y/N)";
+print "OK? (y/N)\n> ";
 
 my $answer = <STDIN>;
 chomp $answer;

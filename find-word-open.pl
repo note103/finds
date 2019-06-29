@@ -48,7 +48,7 @@ for (@result) {
 }
 
 say "\nTotal files: ".scalar keys %urls;
-say "OK? (y/N)";
+print "OK? (y/N)\n> ";
 
 my $answer = <STDIN>;
 chomp $answer;
