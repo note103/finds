@@ -13,7 +13,7 @@ my $opts = {
 GetOptions(
     $opts => qw(
         depth=i
-        command=s
+        command|c=s
         invert-file=s@
         invert-dir=s@
         help|h
