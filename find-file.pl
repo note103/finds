@@ -55,7 +55,7 @@ if (scalar @invert_dir > 0) {
     }
 }
 
-$query = '--query '.$query if $query;
+$query = '--query '.$query.'\ ' if $query;
 
 my $path = `
     files=\$(find . -maxdepth $depth $invert_dir $invert_file -iname '*')
