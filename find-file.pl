@@ -66,6 +66,7 @@ exit if $path eq 'exit';
 
 if (-f $path) {
     print `$command $path`;
+    print `echo $path` if $command ne 'echo';
 }
 elsif (-d $path) {
     print `echo $path`;

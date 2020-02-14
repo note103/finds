@@ -64,6 +64,7 @@ $selected =~ s/\A(.+?):\d+.*/$1/;
 my $command = $opts->{command};
 
 print `$command $selected`;
+print `echo $selected` if $command ne 'echo';
 
 
 __END__
